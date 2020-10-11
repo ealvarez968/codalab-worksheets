@@ -5,6 +5,8 @@ import base64
 import json
 import threading
 import urllib.request, urllib.parse, urllib.error
+from ssl import SSLError
+
 from codalab.common import URLOPEN_TIMEOUT_SECONDS
 
 
@@ -65,4 +67,9 @@ class RestOAuthHandler(object):
         except urllib.error.HTTPError as e:
             if e.code == 401:
                 return None
-            raise
+            if e.code == 404:
+                print("Authentication failed. Please double check your login info")
+            raise e
+        except SSLError as e:
+            print("Certificate verify failed")
+            raise e
